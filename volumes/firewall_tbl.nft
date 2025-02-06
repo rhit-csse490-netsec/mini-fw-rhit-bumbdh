@@ -1,0 +1,25 @@
+#!/usr/sbin/nft -f
+
+define server_ip = "10.10.1.5"
+define clinet_ip = "10.10.0.4"
+
+table ip my_firewall {
+    chain my_chain {
+        type filter hook forward priority 0;
+
+        # Allow SSH
+        ip daddr $server_ip tcp dport 22 accept
+
+        # Allow Telnet
+        ip daddr $server_ip tcp dport 23 accept
+
+        # Allow HTTP
+        ip daddr $server_ip tcp dport 80 accept
+
+        # Count all packets that reach the server
+        counter
+
+        # Drop all other traffic
+        ip saddr $clinet_ip ip daddr $server_ip drop
+    }
+}
